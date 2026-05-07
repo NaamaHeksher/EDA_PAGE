@@ -173,31 +173,31 @@ def render_clustering(df, show_data):
 
 
 def render_about():
-    st.title('About the system')
-    st.write('This Exploratory Data Analysis Web App helps you inspect datasets, visualize numeric relationships, and run clustering analysis.')
+    st.title('אודות המערכת')
+    st.write('אפליקציית ניתוח נתונים זו עוזרת לך לבדוק מערכות נתונים, לדמיין קשרים מספריים ולהריץ ניתוח clustering.')
 
     st.markdown(
-        '- **Home / Overview**: See dataset metrics, missing values, summary statistics, and visualizations.\n'
-        '- **Clustering**: Group your numeric dataset into clusters using k-means.\n'
-        '- **About**: Read about the app and its capabilities.'
+        '- **בית / סקירה כללית**: ראה מטריקות מערכת נתונים, ערכים חסרים, סטטיסטיקה מסכמת וויזואליזציות.\n'
+        '- **Clustering**: קבץ את מערכת הנתונים שלך לקטגוריות באמצעות k-means.\n'
+        '- **אודות**: קרא על האפליקציה והיכולות שלה.'
     )
 
     st.markdown('''
-**How to use the app**
+**כיצד להשתמש באפליקציה**
 
-1. Upload a CSV file, or use the built-in sample dataset.
-2. Explore the Overview page for data summaries and plots.
-3. Open the Clustering page to select numeric features and run group analysis.
-4. Visit About for app information and purpose.
+1. העלה קובץ CSV או השתמש במערכת הנתונים המובנית.
+2. חקור את עמוד הסקירה הכללית לסיכומי נתונים וגרפים.
+3. פתח את עמוד Clustering כדי לבחור תכונות מספריות והריץ ניתוח קטגוריות.
+4. בקר בעמוד אודות לקבלת מידע על האפליקציה ומטרתה.
 ''')
 
     st.markdown('''
-**System features**
+**תכונות המערכת**
 
-- CSV upload and sample dataset support
-- Data overview, metrics, and visuals
-- K-means clustering for numeric columns
-- Simple, interactive Streamlit user interface
+- תמיכה בהעלאת CSV ומערכת נתונים מובנית
+- סקירה כללית, מטריקות וויזואליזציות
+- K-means clustering עבור עמודות מספריות
+- ממשק Streamlit פשוט ואינטראקטיבי
 ''')
 
 
