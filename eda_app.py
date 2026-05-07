@@ -3,7 +3,7 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 
-st.set_page_config(page_title='EDA App', layout='wide')
+st.set_page_config(page_title='SurveyGIS', layout='wide')
 
 @st.cache_data
 def load_sample_data():
@@ -34,17 +34,17 @@ def run_kmeans(data, n_clusters=3, max_iter=100):
 
 def get_dataset():
     with st.sidebar:
-        st.header('Dataset controls')
-        uploaded_file = st.file_uploader('Upload CSV file', type=['csv'])
-        use_sample = st.checkbox('Use sample data', value=True)
-        show_data = st.checkbox('Show raw data', value=True)
+        st.header('בקרי מדידות')
+        uploaded_file = st.file_uploader('העלה קובץ CSV', type=['csv'])
+        use_sample = st.checkbox('השתמש בנתונים לדוגמה', value=True)
+        show_data = st.checkbox('הצג נתונים גולמיים', value=True)
 
     if uploaded_file is not None:
         df = pd.read_csv(uploaded_file)
     elif use_sample:
         df = load_sample_data()
     else:
-        st.warning('Please upload a CSV file or enable sample data.')
+        st.warning('אנא העלה קובץ CSV או הפוך את נתוני הדוגמה לפעילים.')
         return None, False
 
     return df, show_data
@@ -55,57 +55,57 @@ def render_overview(df, show_data):
     rows, columns = df.shape
     missing_percentage = df.isnull().mean().mean() * 100
 
-    st.title('Exploratory Data Analysis')
-    st.write('Upload a CSV file or use the sample dataset to explore metrics, statistics, and visualizations.')
+    st.title('SurveyGIS - ניתוח מדידות')
+    st.write('העלה קובץ מדידות או השתמש בנתונים לדוגמה כדי לחקור מטריקות, סטטיסטיקה וויזואליזציות של המדידות.')
 
-    st.subheader('Dataset overview')
+    st.subheader('סקירת מערכת הנתונים')
     metric_col1, metric_col2, metric_col3, metric_col4 = st.columns(4)
-    metric_col1.metric('Rows', rows)
-    metric_col2.metric('Columns', columns)
-    metric_col3.metric('Missing %', f'{missing_percentage:.2f}%')
-    metric_col4.metric('Numeric columns', len(numeric_columns))
+    metric_col1.metric('שורות', rows)
+    metric_col2.metric('עמודות', columns)
+    metric_col3.metric('חסר %', f'{missing_percentage:.2f}%')
+    metric_col4.metric('עמודות מספריות', len(numeric_columns))
 
     if show_data:
-        st.write('### Raw data preview')
+        st.write('### תצוגה מקדימה של נתונים גולמיים')
         st.dataframe(df, use_container_width=True)
 
-    st.write('### Summary statistics')
-    with st.expander('Show descriptive statistics'):
+    st.write('### סטטיסטיקה מסכמת')
+    with st.expander('הצג סטטיסטיקה תיאורית'):
         st.dataframe(df.describe(include='all').T)
 
-    st.write('### Column details')
-    with st.expander('Show column data types and missing values'):
+    st.write('### פרטי עמודה')
+    with st.expander('הצג סוגי נתונים של עמודות וערכים חסרים'):
         summary = pd.DataFrame({
-            'dtype': df.dtypes.astype(str),
-            'missing': df.isnull().sum(),
-            'unique': df.nunique(dropna=False),
+            'סוג נתונים': df.dtypes.astype(str),
+            'חסר': df.isnull().sum(),
+            'ייחודי': df.nunique(dropna=False),
         })
         st.dataframe(summary)
 
     if numeric_columns:
-        st.write('### Visualizations')
+        st.write('### ויזואליזציות')
 
-        hist_col = st.selectbox('Select numeric column for histogram', numeric_columns, index=0)
+        hist_col = st.selectbox('בחר עמודה מספרית לעלילת התאם', numeric_columns, index=0)
         fig, ax = plt.subplots()
         ax.hist(df[hist_col].dropna(), bins=30, color='cornflowerblue', edgecolor='black')
-        ax.set_title(f'Histogram of {hist_col}')
+        ax.set_title(f'עלילת התאם של {hist_col}')
         ax.set_xlabel(hist_col)
-        ax.set_ylabel('Count')
+        ax.set_ylabel('ספירה')
         st.pyplot(fig)
         plt.close(fig)
 
         if len(numeric_columns) >= 2:
-            x_col = st.selectbox('Select X-axis for scatter plot', numeric_columns, index=0)
-            y_col = st.selectbox('Select Y-axis for scatter plot', numeric_columns, index=1)
+            x_col = st.selectbox('בחר את ציר X לעלילת פיזור', numeric_columns, index=0)
+            y_col = st.selectbox('בחר את ציר Y לעלילת פיזור', numeric_columns, index=1)
             fig2, ax2 = plt.subplots()
             ax2.scatter(df[x_col], df[y_col], alpha=0.7)
-            ax2.set_title(f'{y_col} vs {x_col}')
+            ax2.set_title(f'{y_col} לעומת {x_col}')
             ax2.set_xlabel(x_col)
             ax2.set_ylabel(y_col)
             st.pyplot(fig2)
             plt.close(fig2)
 
-        st.write('### Correlation matrix')
+        st.write('### מטריצת קורלציה')
         corr = df[numeric_columns].corr()
         fig3, ax3 = plt.subplots(figsize=(8, 6))
         cax = ax3.matshow(corr, cmap='coolwarm')
@@ -114,43 +114,43 @@ def render_overview(df, show_data):
         ax3.set_yticks(range(len(corr.index)))
         ax3.set_xticklabels(corr.columns, rotation=45, ha='left')
         ax3.set_yticklabels(corr.index)
-        ax3.set_title('Correlation matrix')
+        ax3.set_title('מטריצת קורלציה')
         st.pyplot(fig3)
         plt.close(fig3)
     else:
-        st.info('No numeric columns are available for visualizations.')
+        st.info('אין עמודות מספריות זמינות לויזואליזציות.')
 
 
 def render_clustering(df, show_data):
-    st.title('Clustering analysis')
-    st.write('Use clustering to group similar observations in your numeric dataset.')
+    st.title('ניתוח clustering של מדידות')
+    st.write('השתמש בקיבוץ כדי לקבץ מדידות דומות בנתונים מספריים שלך.')
 
     if df is None:
-        st.info('Upload a dataset or enable sample data to run clustering.')
+        st.info('העלה מערכת נתונים או אפשר נתוני דוגמה כדי להריץ clustering.')
         return
 
     numeric_columns = df.select_dtypes(include='number').columns.tolist()
     if not numeric_columns:
-        st.warning('No numeric columns available for clustering.')
+        st.warning('אין עמודות מספריות זמינות לקיבוץ.')
         return
 
     if show_data:
-        with st.expander('Show dataset preview'):
+        with st.expander('הצג תצוגה מקדימה של מערכת הנתונים'):
             st.dataframe(df[numeric_columns].head(20), use_container_width=True)
 
-    selected_columns = st.multiselect('Select numeric columns for clustering', numeric_columns, default=numeric_columns[:2])
+    selected_columns = st.multiselect('בחר עמודות מספריות לקיבוץ', numeric_columns, default=numeric_columns[:2])
     if len(selected_columns) < 2:
-        st.warning('Select at least two numeric columns for clustering.')
+        st.warning('בחר לפחות שתי עמודות מספריות לקיבוץ.')
         return
 
-    n_clusters = st.slider('Number of clusters', min_value=2, max_value=10, value=3)
+    n_clusters = st.slider('מספר קטגוריות', min_value=2, max_value=10, value=3)
     labels, centroids = run_kmeans(df[selected_columns].dropna(), n_clusters=n_clusters)
-    st.subheader('Cluster results')
+    st.subheader('תוצאות הקיבוץ')
     df_clusters = df.loc[df[selected_columns].dropna().index].copy()
     df_clusters['cluster'] = labels
     st.dataframe(df_clusters.head(20), use_container_width=True)
 
-    st.write('### Cluster counts')
+    st.write('### ספירת קטגוריות')
     st.bar_chart(df_clusters['cluster'].value_counts().sort_index())
 
     if len(selected_columns) >= 2:
@@ -161,57 +161,50 @@ def render_clustering(df, show_data):
         ax.scatter(centroids[:, 0], centroids[:, 1], marker='X', s=200, c='black')
         ax.set_xlabel(x_col)
         ax.set_ylabel(y_col)
-        ax.set_title('Clustering result')
+        ax.set_title('תוצאת הקיבוץ')
         st.pyplot(fig)
         plt.close(fig)
 
-    st.write('### About this clustering')
+    st.write('### אודות קיבוץ זה')
     st.markdown(
-        'This clustering page uses a simple k-means algorithm implemented in NumPy. '
-        'It helps reveal structure in numeric data by grouping rows with similar values.'
+        'עמוד קיבוץ זה משתמש באלגוריתם k-means פשוט שיושם ב-NumPy. '
+        'הוא עוזר לחשוף מבנה בנתונים מספריים על ידי קיבוץ שורות בעלות ערכים דומים.'
     )
 
 
 def render_about():
-    st.title('אודות המערכת')
-    st.write('אפליקציית ניתוח נתונים זו עוזרת לך לבדוק מערכות נתונים, לדמיין קשרים מספריים ולהריץ ניתוח clustering.')
+    st.title('אודות SurveyGIS')
+    st.write('מערכת מידע גאוגרפי לניהול, שליפה והצגת מדידות שנעשו בעבר, המיועדת למשרדי מדידות.')
 
+    st.subheader('מטרת המערכת')
+    st.write('''
+ארגון פנים-משרדי של החומר הקיים בצורה גאוגרפית הנוחה לחיפוש ומעקב אחר מדידות. 
+המערכת מאפשרת התמצאות מהירה במרחב ושליפה של פרויקטים רלוונטיים באזור המבוקש.
+    ''')
+
+    st.subheader('מקור הנתונים')
+    st.write('מפות מדידה שנעשו במשרד (שחולצו מתוך קבצי DWG / DXF).')
+
+    st.markdown('---')
+    
     st.markdown(
         '- **בית / סקירה כללית**: ראה מטריקות מערכת נתונים, ערכים חסרים, סטטיסטיקה מסכמת וויזואליזציות.\n'
         '- **Clustering**: קבץ את מערכת הנתונים שלך לקטגוריות באמצעות k-means.\n'
         '- **אודות**: קרא על האפליקציה והיכולות שלה.'
     )
 
-    st.markdown('''
-**כיצד להשתמש באפליקציה**
-
-1. העלה קובץ CSV או השתמש במערכת הנתונים המובנית.
-2. חקור את עמוד הסקירה הכללית לסיכומי נתונים וגרפים.
-3. פתח את עמוד Clustering כדי לבחור תכונות מספריות והריץ ניתוח קטגוריות.
-4. בקר בעמוד אודות לקבלת מידע על האפליקציה ומטרתה.
-''')
-
-    st.markdown('''
-**תכונות המערכת**
-
-- תמיכה בהעלאת CSV ומערכת נתונים מובנית
-- סקירה כללית, מטריקות וויזואליזציות
-- K-means clustering עבור עמודות מספריות
-- ממשק Streamlit פשוט ואינטראקטיבי
-''')
-
 
 def main():
-    st.sidebar.title('Navigation')
-    page = st.sidebar.radio('Select page', ['Overview', 'Clustering', 'About'])
+    st.sidebar.title('ניווט')
+    page = st.sidebar.radio('בחר עמוד', ['סקירה כללית', 'קיבוץ', 'אודות'])
     df, show_data = get_dataset()
 
-    if page == 'Overview':
+    if page == 'סקירה כללית':
         if df is not None:
             render_overview(df, show_data)
-    elif page == 'Clustering':
+    elif page == 'קיבוץ':
         render_clustering(df, show_data)
-    elif page == 'About':
+    elif page == 'אודות':
         render_about()
 
 
